@@ -1,10 +1,11 @@
-import { transactionData } from '@/lib/constants';
 import TransactionListItem from './TransactionListItem';
+import { useSelector } from 'react-redux';
 
 function TransactionList() {
+  const transactions = useSelector((state) => state.account.data);
   return (
     <ul className="space-y-6">
-      {transactionData.map((transaction) => (
+      {transactions.map((transaction) => (
         <TransactionListItem key={transaction.id} transaction={transaction} />
       ))}
     </ul>
