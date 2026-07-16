@@ -32,5 +32,21 @@ export const tags = [
   { value: 'Lending', label: 'Lending' },
   { value: 'Investment', label: 'Investment' },
   { value: 'Education', label: 'Education' },
+  { value: 'Debt', label: 'Debt' },
+  { value: 'Miscellaneous', label: 'Miscellaneous' },
+];
+
+export const filters = [
+  { value: 'All', label: 'All' },
+  { value: 'Food', label: 'Food' },
+  { value: 'Income', label: 'Income' },
+  { value: 'Utilities', label: 'Utilities' },
+  { value: 'Entertainment', label: 'Entertainment' },
+  { value: 'Transportation', label: 'Transportation' },
+  { value: 'Health', label: 'Health' },
+  { value: 'Lending', label: 'Lending' },
+  { value: 'Investment', label: 'Investment' },
+  { value: 'Education', label: 'Education' },
+  { value: 'Debt', label: 'Debt' },
   { value: 'Miscellaneous', label: 'Miscellaneous' },
 ];

@@ -1,19 +1,21 @@
 import { configureStore } from '@reduxjs/toolkit';
-import accountSlice from './accountSlice';
+import accountSlice, { initialState } from './accountSlice';
+
 const persistedState = JSON.parse(localStorage.getItem('account'));
-console.log('Persisted State:', persistedState);
+console.log(persistedState);
 
 const store = configureStore({
   reducer: {
     account: accountSlice,
   },
   preloadedState: {
-    account: persistedState || { data: [], balance: 0 },
+    account: persistedState || initialState,
   },
 });
 
 export default store;
 
 store.subscribe(() => {
+  // localStorage.clear();
   localStorage.setItem('account', JSON.stringify(store.getState().account));
 });

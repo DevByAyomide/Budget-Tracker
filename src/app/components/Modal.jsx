@@ -1,3 +1,6 @@
+import { useDispatch } from 'react-redux';
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -9,29 +12,47 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Field, FieldGroup } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { addAccount } from '@/data/accountSlice';
-import { useDispatch } from 'react-redux';
 
-function Modal() {
+import { addTransaction } from '@/data/accountSlice';
+import { tags } from '@/lib/constants';
+
+function Modal({ expense }) {
+  const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
 
   function handleSubmit(event) {
     event.preventDefault();
-    const formData = new FormData(event.target);
+    const formData = new FormData(event.currentTarget);
     const description = formData.get('description');
+    const category = formData.get('category');
     const amount = parseFloat(formData.get('amount'));
-    dispatch(addAccount({ description, amount }));
+    dispatch(addTransaction({ description, category, amount }));
+    setOpen(false);
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="default" size="lg" className="rounded-full">
-            Add Money
+          <Button
+            variant="default"
+            size="lg"
+            className={`${expense && 'absolute bottom-8 -translate-x-1/2 left-1/2 h-12'} rounded-full`}
+            onClick={() => setOpen(true)}
+          >
+            {expense ? 'Add Expense' : 'Add Income'}
           </Button>
         }
       />
@@ -50,6 +71,25 @@ function Modal() {
               <Label htmlFor="amount-1">Amount</Label>
               <Input id="amount-1" name="amount" defaultValue="2500" />
             </Field>
+            {expense && (
+              <Field>
+                <Select name="category" defaultValue={tags[0]} className="w-full">
+                  <SelectTrigger className="w-full" size="9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Tags</SelectLabel>
+                      {tags.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+            )}
           </FieldGroup>
           <DialogFooter>
             <DialogClose render={<Button variant="outline">Cancel</Button>} />
