@@ -3,12 +3,6 @@ import { createSelector, createSlice } from '@reduxjs/toolkit';
 export const initialState = {
   data: [],
   balance: 0,
-  //   activeFilter: {
-  //     category: null,
-  //     range: null,
-  //     period: null,
-  //     dateRange: null,
-  //   },
   activeFilter: {
     category: 'All',
     range: {
@@ -53,11 +47,9 @@ const selectAccount = (state) => state.account;
 
 export const filteredTransaction = createSelector([selectAccount], ({ data, activeFilter }) => {
   const { category, range, period, dateRange } = activeFilter;
-  console.log(category, range, period, dateRange);
 
   // No filter selected -> return everything
   if (!category && !range && !period && !dateRange) {
-    console.log(data);
     return data;
   }
 

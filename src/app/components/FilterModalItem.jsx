@@ -1,7 +1,11 @@
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
+import { useContext } from 'react';
+import { FilterRangeContext } from '@/context/accountContext';
 
-function FilterModalItem({ range, setRange }) {
+function FilterModalItem() {
+  const { range, setRange } = useContext(FilterRangeContext);
+
   function handleRange(value) {
     setRange(value);
   }

@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit';
 import accountSlice, { initialState } from './accountSlice';
 
 const persistedState = JSON.parse(localStorage.getItem('account'));
-console.log(persistedState);
 
 const store = configureStore({
   reducer: {

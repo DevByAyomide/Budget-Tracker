@@ -1,16 +1,16 @@
 import { useSelector } from 'react-redux';
+import { lazy, useState } from 'react';
+import { Link } from 'react-router-dom';
+
+import { ChevronLeft, FilterIcon } from 'lucide-react';
 
 import TransactionListItem from '../components/TransactionListItem';
-// import { filters } from '@/lib/constants';
-import { ChevronLeft, FilterIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+const FilterModal = lazy(() => import('../components/FilterModal'));
+
 import { filteredTransaction } from '@/data/accountSlice';
-import FilterModal from '../components/FilterModal';
-import { useState } from 'react';
 
 function Transactions() {
   const transactions = useSelector(filteredTransaction);
-  console.log(transactions);
   const [openFilterModal, setOpenFilterModal] = useState(false);
 
   return (

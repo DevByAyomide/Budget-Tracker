@@ -1,7 +1,9 @@
 import { useSelector } from 'react-redux';
 import { ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Modal from './Modal';
+import { lazy } from 'react';
+
+const Modal = lazy(() => import('./Modal'));
 
 function BudgetCard() {
   const balanceState = useSelector((state) => state.account.balance);

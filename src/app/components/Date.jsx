@@ -3,9 +3,11 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { FilterDateContext } from '@/context/accountContext';
 
-function Date({ dateRange, setDateRange, setPeriod }) {
+function Date() {
+  const { dateRange, setDateRange, setPeriod } = useContext(FilterDateContext);
   const [custom, setCustom] = useState(false);
 
   return (

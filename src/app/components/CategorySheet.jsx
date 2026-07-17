@@ -4,8 +4,13 @@ import { ChevronRight } from 'lucide-react';
 import { filters } from '@/lib/constants';
 import Date from './Date';
 import { differenceInDays } from 'date-fns';
+import { useContext } from 'react';
+import { CategoryFilterContext, FilterDateContext } from '@/context/accountContext';
 
-function CategorySheet({ onClick, open, setOpen, category, dateModal, dateRange, setDateRange, period, setPeriod }) {
+function CategorySheet({ dateModal }) {
+  const { category, open, setOpen, onSelectCategory } = useContext(CategoryFilterContext);
+  const { dateRange, period } = useContext(FilterDateContext);
+
   const displayDate = period
     ? `${period} Days`
     : dateRange?.startDate && dateRange?.endDate
@@ -33,12 +38,12 @@ function CategorySheet({ onClick, open, setOpen, category, dateModal, dateRange,
         </DialogHeader>
         {!dateModal ? (
           filters.map((item) => (
-            <Button key={item.value} variant="ghost" onClick={(e) => onClick(e, item.label)}>
+            <Button key={item.value} variant="ghost" onClick={(e) => onSelectCategory(e, item.label)}>
               {item.label}
             </Button>
           ))
         ) : (
-          <Date setOpen={setOpen} open={open} dateRange={dateRange} setDateRange={setDateRange} setPeriod={setPeriod} />
+          <Date />
         )}
       </DialogContent>
     </Dialog>

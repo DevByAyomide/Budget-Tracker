@@ -1,9 +1,13 @@
-import { Button } from '@/components/ui/button';
-import FilterModalItem from './FilterModalItem';
 import { useState } from 'react';
-import CategorySheet from './CategorySheet';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { Button } from '@/components/ui/button';
+
+import FilterModalItem from './FilterModalItem';
+import CategorySheet from './CategorySheet';
+
 import { clearFilter, setFilter } from '@/data/accountSlice';
+import { CategoryFilterContext, FilterDateContext, FilterRangeContext } from '@/context/accountContext';
 
 function FilterModal({ setOpenFilterModal }) {
   const activeFilter = useSelector((state) => state.account.activeFilter);
@@ -51,36 +55,36 @@ function FilterModal({ setOpenFilterModal }) {
     setOpenFilterModal(false);
   }
   return (
-    <div className="w-full bg-secondary rounded-xl p-4 absolute bottom-0 left-1/2 -translate-x-1/2">
-      <h2 className="text-xl font-semibold text-center mb-4">Filter</h2>
-      <form className="space-y-4">
-        <CategorySheet onClick={handleToggle} open={open} setOpen={setOpen} category={category} />
-        <FilterModalItem range={range} setRange={setRange} />
-        <CategorySheet
-          dateRange={dateRange}
-          setDateRange={setDateRange}
-          dateModal={true}
-          period={period}
-          setPeriod={setPeriod}
-        />
-        <div className="flex justify-between gap-4">
-          <Button
-            className="flex-1"
-            size="lg"
-            type="button"
-            onClick={() => {
-              dispatch(clearFilter());
-              setOpenFilterModal(false);
-            }}
-          >
-            Clear
-          </Button>
-          <Button className="flex-1" size="lg" type="button" onClick={handleFilter}>
-            Apply
-          </Button>
-        </div>
-      </form>
-    </div>
+    <CategoryFilterContext.Provider value={{ category, setCategory, open, setOpen, onSelectCategory: handleToggle }}>
+      <FilterRangeContext.Provider value={{ range, setRange }}>
+        <FilterDateContext.Provider value={{ dateRange, setDateRange, period, setPeriod }}>
+          <div className="w-full bg-secondary rounded-xl p-4 absolute bottom-0 left-1/2 -translate-x-1/2">
+            <h2 className="text-xl font-semibold text-center mb-4">Filter</h2>
+            <form className="space-y-4">
+              <CategorySheet />
+              <FilterModalItem />
+              <CategorySheet dateModal={true} />
+              <div className="flex justify-between gap-4">
+                <Button
+                  className="flex-1"
+                  size="lg"
+                  type="button"
+                  onClick={() => {
+                    dispatch(clearFilter());
+                    setOpenFilterModal(false);
+                  }}
+                >
+                  Clear
+                </Button>
+                <Button className="flex-1" size="lg" type="button" onClick={handleFilter}>
+                  Apply
+                </Button>
+              </div>
+            </form>
+          </div>
+        </FilterDateContext.Provider>
+      </FilterRangeContext.Provider>
+    </CategoryFilterContext.Provider>
   );
 }
 

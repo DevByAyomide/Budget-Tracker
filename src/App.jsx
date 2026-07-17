@@ -1,6 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
-import Home from './app/pages/Home';
-import Transactions from './app/pages/Transactions';
+import { lazy } from 'react';
+
+const Home = lazy(() => import('./app/pages/Home'));
+const Transactions = lazy(() => import('./app/pages/Transactions'));
 
 function App() {
   return (

@@ -1,14 +1,16 @@
+import { lazy } from 'react';
 import BudgetCard from '../components/BudgetCard';
-import Modal from '../components/Modal';
 import TransactionList from '../components/TransactionList';
+
+const Modal = lazy(() => import('../components/Modal'));
 
 function Home() {
   return (
-    <div className="p-4 space-y-12 relative h-screen">
+    <main role="main" className="p-4 space-y-12 relative h-screen">
       <BudgetCard />
       <TransactionList />
       <Modal expense={true} />
-    </div>
+    </main>
   );
 }
 
