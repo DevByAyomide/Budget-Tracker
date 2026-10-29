@@ -1,5 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { useState } from 'react';
+import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -28,59 +29,123 @@ import { Label } from '@/components/ui/label';
 import { addTransaction } from '@/data/accountSlice';
 import { tags } from '@/lib/constants';
 
-function Modal({ expense }) {
-  const [open, setOpen] = useState(false);
+
+function Modal({ expense = true, defaultDate, trigger, open: controlledOpen, onOpenChange: setControlledOpen }) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? setControlledOpen : setInternalOpen;
+
   const dispatch = useDispatch();
+
+  const expenseCategories = tags.filter((item) => item.value !== 'Income');
+  const defaultDateStr = defaultDate
+    ? format(new Date(defaultDate), 'yyyy-MM-dd')
+    : format(new Date(), 'yyyy-MM-dd');
 
   function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const description = formData.get('description');
-    const category = formData.get('category');
+    const category = expense ? (formData.get('category') || 'Food') : 'Income';
     const amount = parseFloat(formData.get('amount'));
-    dispatch(addTransaction({ description, category, amount }));
+    const dateInput = formData.get('date');
+    let date = new Date().toISOString();
+    if (dateInput) {
+      const parts = dateInput.split('-');
+      if (parts.length === 3) {
+        date = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 12, 0, 0).toISOString();
+      } else {
+        date = new Date(dateInput).toISOString();
+      }
+    }
+
+    if (isNaN(amount) || amount <= 0) {
+      return;
+    }
+
+    dispatch(addTransaction({ description, category, amount, date }));
     setOpen(false);
+
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button
-            variant="default"
-            size="lg"
-            className={`${expense && 'absolute bottom-8 -translate-x-1/2 left-1/2 h-12'} rounded-full`}
-            onClick={() => setOpen(true)}
-          >
-            {expense ? 'Add Expense' : 'Add Income'}
-          </Button>
-        }
-      />
+      {trigger ? (
+        <DialogTrigger render={trigger} />
+      ) : (
+        <DialogTrigger
+          render={
+            <Button
+              variant="default"
+              size="lg"
+              className={`${expense ? 'fixed sm:absolute bottom-6 -translate-x-1/2 left-1/2 h-12 shadow-lg z-30' : ''} rounded-full`}
+              onClick={() => setOpen(true)}
+            >
+              {expense ? '+ Add Expense' : '+ Add Income'}
+            </Button>
+          }
+        />
+      )}
       <DialogContent className="sm:max-w-md p-6">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
-            <DialogTitle>Add Transaction</DialogTitle>
-            <DialogDescription>Enter the details of your new transaction.</DialogDescription>
+            <DialogTitle>{expense ? 'Add Expense' : 'Add Income'}</DialogTitle>
+            <DialogDescription>
+              {expense
+                ? 'Enter the details of your new expense transaction.'
+                : 'Enter the details of your new income transaction.'}
+            </DialogDescription>
           </DialogHeader>
+
           <FieldGroup>
             <Field>
-              <Label htmlFor="description-1">Description</Label>
-              <Input id="description-1" name="description" defaultValue="Grocery Shopping" />
+              <Label htmlFor="tx-description">Description</Label>
+              <Input
+                id="tx-description"
+                name="description"
+                placeholder={expense ? 'e.g. Grocery Shopping, Coffee' : 'e.g. Salary, Freelance'}
+                defaultValue={expense ? 'Grocery Shopping' : 'Salary'}
+                required
+              />
             </Field>
+
             <Field>
-              <Label htmlFor="amount-1">Amount</Label>
-              <Input id="amount-1" name="amount" defaultValue="2500" />
+              <Label htmlFor="tx-amount">Amount (₦)</Label>
+              <Input
+                id="tx-amount"
+                name="amount"
+                type="number"
+                step="0.01"
+                min="0.01"
+                placeholder="0.00"
+                defaultValue={expense ? '2500' : '50000'}
+                required
+              />
             </Field>
+
+            <Field>
+              <Label htmlFor="tx-date">Date</Label>
+              <Input
+                id="tx-date"
+                name="date"
+                type="date"
+                defaultValue={defaultDateStr}
+                required
+              />
+            </Field>
+
             {expense && (
               <Field>
-                <Select name="category" defaultValue={tags[0]} className="w-full">
-                  <SelectTrigger className="w-full" size="9">
+                <Label>Category</Label>
+                <Select name="category" defaultValue={expenseCategories[0]?.value || 'Food'} className="w-full">
+                  <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Tags</SelectLabel>
-                      {tags.map((item) => (
+                      <SelectLabel>Expense Category</SelectLabel>
+                      {expenseCategories.map((item) => (
                         <SelectItem key={item.value} value={item.value}>
                           {item.label}
                         </SelectItem>
@@ -91,13 +156,16 @@ function Modal({ expense }) {
               </Field>
             )}
           </FieldGroup>
-          <DialogFooter>
+
+          <DialogFooter className="mt-6">
             <DialogClose render={<Button variant="outline">Cancel</Button>} />
-            <Button type="submit">Save changes</Button>
+            <Button type="submit">Save Transaction</Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
   );
 }
+
 export default Modal;
+
